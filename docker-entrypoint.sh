@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 #  Licensed to the Apache Software Foundation (ASF) under one
@@ -20,26 +20,46 @@
 
 JOBMANAGER_HOSTNAME="$2"
 
+function read_env {
+  for var in `env`
+  do
+    if [[ "$var" =~ ^flink_ ]]; then
+      env_var=`echo "$var" | sed -r "s/(.*)=.*/\1/g"`
+      flink_property=`echo "$env_var" | tr _ .  | sed -e "s/flink.//g"`
+
+      if grep -q "$flink_property:" $FLINK_HOME/conf/flink-conf.yaml; then
+        sed -i '/'"$flink_property"'/c\'"$flink_property"': '"${!env_var}" $FLINK_HOME/conf/flink-conf.yaml
+      else
+        echo "$flink_property: ${!env_var}" >> $FLINK_HOME/conf/flink-conf.yaml
+      fi
+    fi
+  done
+}
+
 if [ -z "$JOBMANAGER_HOSTNAME" ]; then
     # make use of Docker container linking and exploit the jobmanager entry in /etc/hosts
     JOBMANAGER_HOSTNAME="flink-jobmanager"
-fi 
+fi
 
 if [ "$1" = "jobmanager" ]; then
-    
-    sed -i -e "s/jobmanager.rpc.address: localhost/jobmanager.rpc.address: $JOBMANAGER_HOSTNAME/g" $FLINK_HOME/conf/flink-conf.yaml
+    export flink_jobmanager_rpc_address=$JOBMANAGER_HOSTNAME
+    read_env
 
     echo "Starting Job Manager"
     echo "config file: " && grep '^[^\n#]' $FLINK_HOME/conf/flink-conf.yaml
     $FLINK_HOME/bin/jobmanager.sh start cluster
+    echo "Sleeping 3 seconds, then start to tail the log file"
+    sleep 3 && tail -c +1 -f `ls $FLINK_HOME/log/*.log | head -n1`
 elif [ "$1" = "taskmanager" ]; then
-    sed -i -e "s/jobmanager.rpc.address: localhost/jobmanager.rpc.address: $JOBMANAGER_HOSTNAME/g" $FLINK_HOME/conf/flink-conf.yaml
 
-    sed -i -e "s/taskmanager.numberOfTaskSlots: 1/taskmanager.numberOfTaskSlots: `grep -c ^processor /proc/cpuinfo`/g" $FLINK_HOME/conf/flink-conf.yaml
+    export flink_jobmanager_rpc_address=$JOBMANAGER_HOSTNAME
+    read_env
 
     echo "Starting Task Manager"
     echo "config file: " && grep '^[^\n#]' $FLINK_HOME/conf/flink-conf.yaml
     $FLINK_HOME/bin/taskmanager.sh start
+    echo "Sleeping 3 seconds, then start to tail the log file"
+    sleep 3 && tail -c +1 -f `ls $FLINK_HOME/log/*.log | head -n1`
 else
     $@
 fi

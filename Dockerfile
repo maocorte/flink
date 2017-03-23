@@ -1,7 +1,7 @@
 FROM denvazh/scala:2.11.8-openjdk8
 
 ARG HADOOP_VERSION=27
-ARG FLINK_VERSION=1.1.3
+ARG FLINK_VERSION=1.2.0
 ARG SCALA_BINARY_VERSION=2.11
 
 ENV FLINK_INSTALL_PATH /opt
@@ -19,7 +19,12 @@ RUN set -x && \
     rm -rf /var/cache/apk/* && \
     echo Installed Flink ${FLINK_VERSION} to ${FLINK_HOME}
 
+# Add container entrypoint
 ADD docker-entrypoint.sh ${FLINK_HOME}/bin/
+
+# Add base config
+ADD flink-conf.yaml $FLINK_HOME/conf/flink-conf.yaml
+
 # Additional output to console, allows gettings logs with 'docker-compose logs'
 ADD log4j.properties ${FLINK_HOME}/conf/
 
