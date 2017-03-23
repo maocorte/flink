@@ -38,7 +38,7 @@ function read_env {
 
 if [ -z "$JOBMANAGER_HOSTNAME" ]; then
     # make use of Docker container linking and exploit the jobmanager entry in /etc/hosts
-    JOBMANAGER_HOSTNAME="flink-jobmanager"
+    JOBMANAGER_HOSTNAME="jobmanager"
 fi
 
 if [ "$1" = "jobmanager" ]; then

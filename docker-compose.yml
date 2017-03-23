@@ -18,8 +18,8 @@
 
 version: "2"
 services:
-  flink-jobmanager:
-    image: maocorte/flink:1.2.0
+  jobmanager:
+    image: maocorte/flink-docker:1.2.0
     environment:
       flink_jobmanager_rpc_port: 6123
       flink_jobmanager_web_port: 8081
@@ -28,23 +28,23 @@ services:
       #flink_blob_storage_directory: /data/blobs
       #flink_state_backend: filesystem
       #flink_state_backend_fs_checkpointdir: /data/checkpoint
-      flink_fs_default-scheme: file:///
-      flink_taskmanager_numberOfTaskSlots: 2
-      flink_taskmanager_heap_mb: 2048
-      flink_taskmanager_memory_preallocate: "false"
-      flink_parallelism_default: 1
+      #flink_fs_default-scheme: file:///
+      #flink_taskmanager_numberOfTaskSlots: 2
+      #flink_taskmanager_heap_mb: 2048
+      #flink_taskmanager_memory_preallocate: "false"
+      #flink_parallelism_default: 1
     ports:
       - "8081:8081"
     expose:
       - "6123"
     command: jobmanager
 
-  flink-taskmanager:
-    image: maocorte/flink:1.2.0
+  taskmanager:
+    image: maocorte/flink-docker:1.2.0
     environment:
       flink_jobmanager_rpc_port: 6123
-      flink_jobmanager_web_port: 8081
-      flink_jobmanager_heap_mb: 512
+      #flink_jobmanager_web_port: 8081
+      #flink_jobmanager_heap_mb: 512
       #flink_taskmanager_tmp_dirs: /data/tasks
       #flink_blob_storage_directory: /data/blobs
       #flink_state_backend: filesystem
@@ -58,7 +58,7 @@ services:
       - "6121"
       - "6122"
     depends_on:
-      - flink-jobmanager
+      - jobmanager
     links:
-      - flink-jobmanager
+      - jobmanager
     command: taskmanager
