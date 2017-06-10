@@ -1,8 +1,9 @@
 # Flink in Docker
 
-This is a Docker image appropriate for running Flink in Kuberenetes. You can also run it locally with docker-compose in which case you get two containers by default:
+This is a Docker image appropriate for running Flink in Kuberenetes. You can also run it locally with docker-compose in which case you get three containers by default:
 * `flink-jobmanager` - runs a Flink JobManager in cluster mode and exposes a port for Flink and a port for the WebUI.
 * `flink-taskmanager` - runs a Flink TaskManager and connects to the Flink Job Manager via static DNS name `flink-jobmanager`.
+* `flink-history-server` - runs a Flink History Server
 
 The Docker setup is heavily influenced by [docker-flink](https://github.com/apache/flink/tree/master/flink-contrib/docker-flink)
 
