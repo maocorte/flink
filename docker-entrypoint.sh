@@ -45,7 +45,7 @@ if [ "$1" = "jobmanager" ]; then
     export flink_jobmanager_rpc_address=$JOBMANAGER_HOSTNAME
     read_env
 
-    echo "Starting Job Manager"
+    echo "Starting JobManager"
     echo "config file: " && grep '^[^\n#]' $FLINK_HOME/conf/flink-conf.yaml
     $FLINK_HOME/bin/jobmanager.sh start cluster
     echo "Sleeping 3 seconds, then start to tail the log file"
@@ -55,9 +55,19 @@ elif [ "$1" = "taskmanager" ]; then
     export flink_jobmanager_rpc_address=$JOBMANAGER_HOSTNAME
     read_env
 
-    echo "Starting Task Manager"
+    echo "Starting TaskManager"
     echo "config file: " && grep '^[^\n#]' $FLINK_HOME/conf/flink-conf.yaml
     $FLINK_HOME/bin/taskmanager.sh start
+    echo "Sleeping 3 seconds, then start to tail the log file"
+    sleep 3 && tail -c +1 -f `ls $FLINK_HOME/log/*.log | head -n1`
+elif [ "$1" = "historyserver" ]; then
+
+    export flink_jobmanager_rpc_address=$JOBMANAGER_HOSTNAME
+    read_env
+
+    echo "Starting History Server"
+    echo "config file: " && grep '^[^\n#]' $FLINK_HOME/conf/flink-conf.yaml
+    $FLINK_HOME/bin/historyserver.sh start
     echo "Sleeping 3 seconds, then start to tail the log file"
     sleep 3 && tail -c +1 -f `ls $FLINK_HOME/log/*.log | head -n1`
 else
