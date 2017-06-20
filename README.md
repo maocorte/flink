@@ -1,37 +1,41 @@
 [![](https://images.microbadger.com/badges/image/maocorte/flink.svg)](http://microbadger.com/images/maocorte/flink "Get your own image badge on microbadger.com")
 
-# Flink in Docker
+Flink in Docker
+===============
 
-This is a Docker image appropriate for running Flink in Kuberenetes. You can also run it locally with docker-compose in which case you get three containers by default:
+This is a Docker image appropriate for running Flink. You can run it locally with docker-compose in which case you get three containers by default:
 * `flink-jobmanager` - runs a Flink JobManager in cluster mode and exposes a port for Flink and a port for the WebUI.
-* `flink-taskmanager` - runs a Flink TaskManager and connects to the Flink Job Manager via static DNS name `flink-jobmanager`.
+* `flink-taskmanager` - runs a Flink TaskManager and connects to the Flink Job Manager via static DNS name `jobmanager`.
 * `flink-history-server` - runs a Flink History Server
 
-The Docker setup is heavily influenced by [docker-flink](https://github.com/apache/flink/tree/master/flink-contrib/docker-flink)
+Usage
+=====
 
-# Usage
-
-## Build
+Build
+-----
 
 You only need to build the Docker image if you have changed Dockerfile or the startup shell script, otherwise skip to the next step and start using directly.
 
-To build, get the code from Github, change as desired and build an image by running `make`
+To build, get the code from Github, change as desired and build an image by running `docker build .`
 
-## Run locally
+Run locally
+-----------
 
 Get the `docker-compose.yml` from Github and then use the following snippets
 
-##### Start JobManager and TaskManager
-`docker-compose up -d` will start a JobManager with a single TaskManager in background with the History Server.
+**Start JobManager and TaskManager**
 
-##### Scale TaskManagers
-`docker-compose scale flink-taskmanager=5` will scale to 5 TaskManagers.
+`docker-compose up -d` will start in background a JobManager with a single TaskManager and the History Server.
 
-##### Deploy and Run a Job
+**Scale TaskManagers**
+
+`docker-compose scale taskmanager=5` will scale to 5 TaskManagers.
+
+**Deploy and Run a Job**
 
 1. Copy the Flink job JAR to the Job Manager
 
-`docker cp /path/to/job.jar $(docker ps --filter name=flink-jobmanager --format={{.ID}}):/job.jar` to
+`docker cp /path/to/job.jar $(docker ps --filter name=jobmanager --format={{.ID}}):/job.jar` to
 
 2. Copy the data to each Flink node if necessary
 
@@ -43,17 +47,19 @@ done
 
 3. Run the job
 
-`docker exec -it $(docker ps --filter name=flink-jobmanager --format={{.ID}}) flink run -c <your_job_class> /job.jar [optional params]`
+`docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) flink run -c <your_job_class> /job.jar [optional params]`
 
 where optional params could for example point to the dataset copied at the previous step.
 
-##### Accessing Flink Web Dashboard
+**Accessing Flink Web Dashboard**
 
 Navigate to [http://localhost:8081](http://localhost:8081)
 
-##### Stop Flink Cluster
+**Stop Flink Cluster**
+
 `docker-compose down` shuts down the cluster.
 
-# Contribution
+Disclaimer
+==========
 
-You are very welcome to open an issue or a PR on Github.
+Apache®, Apache Flink™, Flink™, and the Apache feather logo are trademarks of [The Apache Software Foundation](http://apache.org).
