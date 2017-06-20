@@ -11,15 +11,13 @@ This is a Docker image appropriate for running Flink. You can run it locally wit
 Usage
 =====
 
-Build
------
+### Build
 
 You only need to build the Docker image if you have changed Dockerfile or the startup shell script, otherwise skip to the next step and start using directly.
 
 To build, get the code from Github, change as desired and build an image by running `docker build .`
 
-Run locally
------------
+### Run locally
 
 Get the `docker-compose.yml` from Github and then use the following snippets
 
