@@ -1,3 +1,5 @@
+[![](https://images.microbadger.com/badges/image/maocorte/flink.svg)](http://microbadger.com/images/maocorte/flink "Get your own image badge on microbadger.com")
+
 # Flink in Docker
 
 This is a Docker image appropriate for running Flink in Kuberenetes. You can also run it locally with docker-compose in which case you get three containers by default:
